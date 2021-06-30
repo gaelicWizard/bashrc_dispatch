@@ -69,6 +69,7 @@ then
     typeset -rx SHELL_PLATFORM
     typeset -frx shell_is_linux
     typeset -frx shell_is_osx
+    typeset -frx shell_is_bsd
     typeset -frx shell_is_cygwin
     typeset -frx shell_is_login
     typeset -frx shell_is_interactive
