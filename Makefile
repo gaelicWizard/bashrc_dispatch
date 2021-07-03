@@ -1,9 +1,9 @@
 pkgname = bashrc_dispatch# $Id$
 include xdgbasedir.mk# ~/Library/Makefiles/
 
-installed_tool ?= $(bindir)/$(pkgname)
+tools_brcd ?= $(bindir)/$(pkgname)
 
-bashrc_confdir ?= ${XDG_CONFIG_HOME}/bash
+bashrc_confdir ?= $(sysconfdir)/bash
 
 bashrc_interactive ?= $(bashrc_confdir)/bashrc_interactive
 bashrc_login ?= $(bashrc_confdir)/bashrc_login
@@ -16,11 +16,13 @@ profile ?= ${HOME}/.profile
 
 envdir ?= $(datarootdir)/MacOSX# ~/Library/Application Support/MacOSX
 oldenvdir ?= $(PREFIX)/.MacOSX# ~/.MacOSX
-modereadonly ?= 444# ugo=r
-moderwdir ?= 755# u=rwx,go=rx
+moderobin ?= 555# ugo=rx
+moderodata ?= 444# ugo=r
+moderw ?= 755# u=rwx,go=rx
 
-INSTALL ?= install -bCpSv -m $(modereadonly)
-INSTALL_DIR ?= install -d -v -m $(moderwdir)
+INSTALL_BIN ?= install -bCpSv -m $(modeobin)
+INSTALL_DATA ?= install -bCpSv -m $(moderodata)
+INSTALL_DIR ?= install -d -v -m $(moderw)
 
 GIT ?= /usr/bin/git
 
@@ -33,19 +35,25 @@ autoinstall: $(GIT)
 git-pull: $(GIT)
 	@$(GIT) pull
 
-install: $(installed_tool) $(bashrc) $(bash_profile)
+install: $(tools_brcd) $(bashrc) $(bash_profile)
 
-$(installed_tool): $(pkgname) |$(bindir)/
+$(tools_brcd): $(pkgname) |$(bindir)/
 	$(INSTALL) $^ $@
 
 $(bashrc_interactive): |$(bashrc_confdir)/
 	echo "[ ! -l $(bashrc) ] && echo mv -vn $(bashrc) $(bashrc_interactive)"
 
-$(bashrc): $(installed_tool) |$(bashrc_interactive)
+$(bashrc): $(tools_brcd) |$(bashrc_interactive)
 	echo ln -svfh $< $@
 
-$(bash_profile): $(installed_tool) |$(bashrc_login)
+$(bash_profile): $(tools_brcd) |$(bashrc_once)
 	echo ln -svfh $< $@
+
+$(bashrc_login): |$(bashrc_confdir)/
+	echo mv -vn $(bash_login) $@
+
+$(bashrc_once): |$(bashrc_confdir)/
+	echo mv -vn $(bash_profile) $@
 
 $(bashrc_confdir)/:
 	$(INSTALL_DIR) $@
