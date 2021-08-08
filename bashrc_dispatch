@@ -20,7 +20,7 @@ PRF="${XDG_CONFIG_HOME:-$HOME/.config}/bash/"
 
 # Avoid recursive invocation
 
-[[ -n "$BASHRC_DISPATCH_PID" && $$ -eq "$BASHRC_DISPATCH_PID" ]] && return
+[[ -n "${BASHRC_DISPATCH_PID:-}" && $$ -eq "$BASHRC_DISPATCH_PID" ]] && return
 BASHRC_DISPATCH_PID=$$
 
 
@@ -57,12 +57,13 @@ fi
 
 # Make $BASH_ENV the same in interactive and non-interactive scripts
 
-[[ -z "$BASH_ENV" ]] && export BASH_ENV="$BASH_SOURCE"
+: ${BASH_ENV:=$BASH_SOURCE} 
+export BASH_ENV
 
 
 # Make these available to the potentially convoluted bashrc_* startup scripts
 
-if $EXPORT_FUNCTIONS
+if ${EXPORT_FUNCTIONS:=true}
 then
     typeset -rx SHELL_PLATFORM
     typeset -frx shell_is_linux
@@ -76,7 +77,7 @@ fi
 
 # Now dispatch special files
 
-if [[ -f "${PRF}bashrc_once" && -z "$BRCD_RANONCE" ]]
+if [[ -f "${PRF}bashrc_once" && -z "${BRCD_RANONCE:-}" ]]
 then
   export BRCD_RANONCE=true
   . "${PRF}bashrc_once"
@@ -92,7 +93,6 @@ fi
 if ! $EXPORT_FUNCTIONS
 then
     unset SHELL_PLATFORM
-    unset BASHRC_DISPATCH_PID
     unset -f shell_is_linux
     unset -f shell_is_osx
     unset -f shell_is_bsd
