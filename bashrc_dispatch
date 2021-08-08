@@ -44,7 +44,7 @@ then
   shell_is_cygwin       () { false ; }
   shell_is_login        () { shopt -q login_shell ; }
   shell_is_interactive  () { [[ "$-" == *'i'* ]] ; }
-  shell_is_script       () { ! shell_is_interactive ; }
+  shell_is_script       () { [[ "$-" != *'i'* ]] ; }
 
   case "$OSTYPE" in
     *'linux'*   )  shell_is_linux  () { true ; }  ;;
