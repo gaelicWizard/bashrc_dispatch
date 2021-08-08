@@ -20,15 +20,14 @@ PRF="${XDG_CONFIG_HOME:-$HOME/.config}/bash/"
 
 # Avoid recursive invocation
 
-[ -n "$BASHRC_DISPATCH_PID" ] && [ $$ -eq "$BASHRC_DISPATCH_PID" ] && return
+[[ -n "$BASHRC_DISPATCH_PID" && $$ -eq "$BASHRC_DISPATCH_PID" ]] && return
 BASHRC_DISPATCH_PID=$$
 
 
 # Setup the main shell variables and functions
 
-if [ -z "$SHELL_PLATFORM" ]
+if [[ "${SHELL_PLATFORM:=OTHER}" == "OTHER" ]]
 then
-    SHELL_PLATFORM='OTHER'
     case "$OSTYPE" in
       *'linux'*   ) SHELL_PLATFORM='LINUX' ;;
       *'darwin'*  ) SHELL_PLATFORM='OSX' ;;
@@ -58,7 +57,7 @@ fi
 
 # Make $BASH_ENV the same in interactive and non-interactive scripts
 
-[ -z "$BASH_ENV" ] && export BASH_ENV="$BASH_SOURCE"
+[[ -z "$BASH_ENV" ]] && export BASH_ENV="$BASH_SOURCE"
 
 
 # Make these available to the potentially convoluted bashrc_* startup scripts
@@ -77,15 +76,15 @@ fi
 
 # Now dispatch special files
 
-if [ -f "${PRF}bashrc_once"  ] && [ -z "$BRCD_RANONCE" ]
+if [[ -f "${PRF}bashrc_once" && -z "$BRCD_RANONCE" ]]
 then
   export BRCD_RANONCE=true
   . "${PRF}bashrc_once"
 fi
-[ -f "${PRF}bashrc_all" ]                                   && . "${PRF}bashrc_all"
-[ -f "${PRF}bashrc_script" ]      && shell_is_script        && . "${PRF}bashrc_script"
-[ -f "${PRF}bashrc_interactive" ] && shell_is_interactive   && . "${PRF}bashrc_interactive"
-[ -f "${PRF}bashrc_login" ]       && shell_is_login         && . "${PRF}bashrc_login"
+[[ -f "${PRF}bashrc_all" ]]                                   && . "${PRF}bashrc_all"
+[[ -f "${PRF}bashrc_script" ]]      && shell_is_script        && . "${PRF}bashrc_script"
+[[ -f "${PRF}bashrc_interactive" ]] && shell_is_interactive   && . "${PRF}bashrc_interactive"
+[[ -f "${PRF}bashrc_login" ]]       && shell_is_login         && . "${PRF}bashrc_login"
 
 
 # Unset variables if necessary to avoid env polution
